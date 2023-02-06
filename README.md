@@ -1,5 +1,7 @@
 # Command Recall
 
+A CLI tool connected to GPT-3 to help find the right terminal command 
+
 ## Install
 to install the cli:
 `cargo install --git https://github.com/CamilleMo/command_recall`
@@ -21,6 +23,23 @@ Optionally create an alias: `alias cr='command_recall ask --task'`
 
 
 ```bash
+
+command_recall ask --task "find my raspberry on my LAN"
+┌────────┬──────────────┬─────────────────────────────────────────────┐
+│ number │ command      │ description                                 │
+├────────┼──────────────┼─────────────────────────────────────────────┤
+│ 1.     │ nmap -sn     │ Network Mapper - Ping Scan                  │
+│ 2.     │ arp-scan     │ ARP Scanner                                 │
+│ 3.     │ avahi-browse │ Browse for mDNS/DNS-SD services             │
+│ 4.     │ nbtscan      │ NetBIOS Name Service Scanner                │
+│ 5.     │ nmap -sP     │ Network Mapper - Ping Scan                  │
+│ 6.     │ nmap -sL     │ Network Mapper - List Scan                  │
+│ 7.     │ nmap -sU     │ Network Mapper - UDP Scan                   │
+│ 8.     │ nmap -sV     │ Network Mapper - Version Detection          │
+│ 9.     │ nmap -O      │ Network Mapper - Operating System Detection │
+│ 10.    │ nmap -A      │ Network Mapper - Aggressive Scan            │
+└────────┴──────────────┴─────────────────────────────────────────────┘
+
 command_recall ask --task "mount my hard drive"
 ┌────────┬────────────┬──────────────────────────────────────────┐
 │ number │ command    │ description                              │
@@ -36,6 +55,7 @@ command_recall ask --task "mount my hard drive"
 │ 9.     │ umount     │ Unmount file systems                     │
 │ 10.    │ fsck       │ Check and repair a Linux filesystem      │
 └────────┴────────────┴──────────────────────────────────────────┘
+
 command_recall ask --task "mount my hard drive using mount"
 ┌────────┬─────────────────────────────────────────────────────┬──────────────────────────┐
 │ number │ command                                             │ description              │
@@ -53,3 +73,8 @@ command_recall ask --task "mount my hard drive using mount"
 └────────┴─────────────────────────────────────────────────────┴──────────────────────────┘
 
 ```
+
+## Notes
+
+ - Even if the temperature is set to 0 the model is not determinist. Response can change.
+ - Timeouts happen frequently.
