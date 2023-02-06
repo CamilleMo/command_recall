@@ -1,4 +1,4 @@
-use std::error::Error;
+#![allow(dead_code)] // to remove when new features are added
 
 use crate::config_management::read_config_file;
 use reqwest::blocking::Client;
@@ -10,7 +10,7 @@ pub fn make_prompt(task: String) -> String {
     let prompt = format!("Assistant is a model trained by openai.
     It is used to help linux users to find the appropriate command for a given task.
     Assistant propose 10 commands. These commands will not only show the name of the command but also an example of how to use it
-    for basic usage and a basic description between parenthesis. No other text will be printed after parenthesis.
+    for basic usage and always include a basic description between parenthesis. No other text will be printed after parenthesis.
     Always use numbers from 1 to 10.
     task: {}
     commands:", task);
@@ -37,7 +37,7 @@ pub fn make_request(task: String, debug: Option<bool>) -> Response {
     };
 
     match response.status().is_success() {
-        true => println!("Success"),
+        true => {},
         false => {
             eprintln!("Failure");
             eprintln!("Status: {}", response.status());
