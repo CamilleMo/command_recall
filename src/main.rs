@@ -11,12 +11,16 @@ fn main() {
         Commands::Configure { token } => {
             config_management::create_config_file_in_user_home_dir(token);
         }
-        Commands::Ask { task, debug } => {
+        Commands::Ask {
+            task,
+            debug,
+            n_results,
+        } => {
             println!("task: {}", task);
-            let _ = openai_api::make_request(task, debug);
-            }
+            let _ = openai_api::make_request(task, debug, n_results);
         }
     }
+}
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
@@ -37,5 +41,7 @@ enum Commands {
         task: String,
         #[arg(short, long)]
         debug: Option<bool>,
+        #[arg(short, long)]
+        n_results: Option<String>,
     },
 }

@@ -6,25 +6,45 @@ use serde::Deserialize;
 use serde_json::json;
 use tabled::{Style, Table, Tabled};
 
-pub fn make_prompt(task: String) -> String {
+pub fn make_prompt(task: String, number_of_results: Option<String>) -> String {
+    check_n(&number_of_results);
+    let n_res = if let Some(n) = number_of_results {
+        n
+    } else {
+        "10".to_string()
+    };
     let prompt = format!("Assistant is a model trained by openai.
     It is used to help linux users to find the appropriate command for a given task.
-    Assistant propose 10 commands. These commands will not only show the name of the command but also an example of how to use it
+    Assistant propose {} commands. These commands will not only show the name of the command but also an example of how to use it
     for basic usage and always include a basic description between parenthesis. No other text will be printed after parenthesis.
     Always use numbers from 1 to 10.
     task: {}
-    commands:", task);
+    commands:", n_res, task);
     prompt
 }
 
-pub fn make_request(task: String, debug: Option<bool>) -> Response {
+fn check_n(number_of_results: &Option<String>) {
+    if let Some(n) = number_of_results {
+        let n_int = n.parse::<i32>().unwrap();
+        if n_int < 1 || n_int > 10 {
+            eprintln!("Error: n_results must be between 1 and 10");
+            std::process::exit(1);
+        }
+    }
+}
+
+pub fn make_request(
+    task: String,
+    debug: Option<bool>,
+    number_of_results: Option<String>,
+) -> Response {
     let client = Client::new();
     let api_key = read_config_file().token;
     let request = client
         .post("https://api.openai.com/v1/completions")
         .header("Content-Type", "application/json")
         .header("Authorization", format!("Bearer {}", api_key))
-        .json(&build_body(task));
+        .json(&build_body(task, number_of_results));
     let response = match request.send() {
         Ok(response) => response,
         Err(err) => {
@@ -37,7 +57,7 @@ pub fn make_request(task: String, debug: Option<bool>) -> Response {
     };
 
     match response.status().is_success() {
-        true => {},
+        true => {}
         false => {
             eprintln!("Failure");
             eprintln!("Status: {}", response.status());
@@ -57,9 +77,9 @@ pub fn make_request(task: String, debug: Option<bool>) -> Response {
     response
 }
 
-fn build_body(task: String) -> serde_json::Value {
+fn build_body(task: String, number_of_results: Option<String>) -> serde_json::Value {
     let model = "text-davinci-003";
-    let prompt = make_prompt(task);
+    let prompt = make_prompt(task, number_of_results);
     let temperature = 0.0;
     let max_tokens = 400;
 
@@ -117,7 +137,8 @@ fn make_vec_row_from_vec_string(vec_string: Vec<String>) -> Vec<Row> {
             .split(')')
             .nth(0)
             .unwrap()
-            .trim().to_string();
+            .trim()
+            .to_string();
         // extract the command
         let command_step1 = command_row_trimmed.split('(').nth(0).unwrap();
         let command = command_step1[number.len()..].trim().to_string();

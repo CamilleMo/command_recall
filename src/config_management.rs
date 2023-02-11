@@ -18,8 +18,11 @@ pub fn create_config_file_in_user_home_dir(token: Option<String>) {
     }
     // create the config file
     if token.is_none() {
-        write(&config_file, "token = ").expect("Failed to create config file");
-        println!("Please add your OpenAI API key to the config file: {:?}", config_file);
+        write(&config_file, "token = ").expect("Failed to create config file, please create the .config directory in your home directory");
+        println!(
+            "Please add your OpenAI API key to the config file: {:?}",
+            config_file
+        );
         println!("You can find your API key at https://platform.openai.com/account/api-keys");
     } else {
         write(&config_file, format!("token = \"{}\"", token.unwrap()))
